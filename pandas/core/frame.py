@@ -74,6 +74,7 @@ from pandas.util._exceptions import (
 from pandas.util._validators import (
     validate_ascending,
     validate_bool_kwarg,
+    validate_bool_kwargs,
     validate_percentile,
 )
 
@@ -5823,6 +5824,7 @@ class DataFrame(NDFrame, OpsMixin):
         verify_integrity: bool = ...,
     ) -> None: ...
 
+    @validate_bool_kwargs("drop", "append", "inplace", "verify_integrity")
     def set_index(
         self,
         keys,
@@ -5925,7 +5927,6 @@ class DataFrame(NDFrame, OpsMixin):
         3 9       7  2013    84
         4 16     10  2014    31
         """
-        inplace = validate_bool_kwarg(inplace, "inplace")
         self._check_inplace_and_allows_duplicate_labels(inplace)
         if not isinstance(keys, list):
             keys = [keys]

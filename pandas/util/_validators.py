@@ -6,10 +6,13 @@ for validating data or function arguments
 from __future__ import annotations
 
 from collections.abc import (
+    Callable,
     Iterable,
     Sequence,
 )
+import functools
 from typing import (
+    Any,
     TypeVar,
     overload,
 )
@@ -267,6 +270,20 @@ def validate_bool_kwarg(
             f"type {type(value).__name__}."
         )
     return value
+
+
+def validate_bool_kwargs(*params: str) -> Callable[..., Any]:
+    def validate_func(func: Callable[..., Any]):
+        @functools.wraps(func)
+        def validate(*args, **kwargs):
+            for param in params:
+                if param in kwargs:
+                    validate_bool_kwarg(kwargs[param], param)
+            return func(*args, **kwargs)
+
+        return validate
+
+    return validate_func
 
 
 def validate_fillna_kwargs(value, method, validate_scalar_dict_value: bool = True):
